@@ -96,12 +96,24 @@ trait FootprintAwareTrait
      */
     protected function _setCurrentUser($user = null)
     {
-        if ($user === null && !empty($this->Auth)) {
-            $user = $this->Auth->user();
+        if ($user === null) {
+            if ($this->components()->has('Authentication')) {
+                $identity = $this->Authentication->getIdentity();
+                if ($identity) {
+                    $user = $identity->getOriginalData();
+                }
+            } elseif ($this->components()->has('Auth')) {
+                $user = $this->Auth->user();
+            } else {
+                $identity = $this->request->getAttribute('identity');
+                if ($identity && $identity instanceof IdentityInterface) {
+                    $user = $identity->getOriginalData();
+                }
+            }
         }
 
         if (!$user) {
-            return false;
+            return null;
         }
 
         $this->_currentUserInstance = $this->_getUserInstance($user);
