@@ -5,6 +5,7 @@ use Cake\Event\Event;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Muffin\Footprint\Event\FootprintListener;
+use ArrayObject;
 
 trait FootprintAwareTrait
 {
@@ -147,7 +148,7 @@ trait FootprintAwareTrait
     protected function _circumventEventManager($method, $args = [])
     {
         EventManager::instance()->off('Model.initialize', [$this, 'footprint']);
-        $result = call_user_func_array([TableRegistry::get($this->_userModel), $method], $args);
+        $result = call_user_func_array([$this->getTableLocator()->get($this->_userModel), $method], $args);
         EventManager::instance()->on('Model.initialize', [$this, 'footprint']);
 
         return $result;
@@ -162,7 +163,9 @@ trait FootprintAwareTrait
     protected function _getUserInstanceFromArray($user)
     {
         $options = ['accessibleFields' => ['*' => true], 'validate' => false];
-
+        if($user instanceof ArrayObject) {
+            $user = $user->getArrayCopy();
+        }
         return $this->_circumventEventManager('newEntity', [$user, $options]);
     }
 

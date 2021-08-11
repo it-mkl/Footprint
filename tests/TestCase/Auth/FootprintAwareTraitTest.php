@@ -23,7 +23,7 @@ class FootprintAwareTraitTest extends TestCase
             ->withData('password', 'cake');
         $this->controller->Auth->setConfig('authenticate', ['Form']);
 
-        $Users = TableRegistry::get('Users');
+        $Users = TableRegistry::getTableLocator()->get('Users');
         $Users->updateAll(['password' => password_hash('cake', PASSWORD_BCRYPT)], []);
     }
 

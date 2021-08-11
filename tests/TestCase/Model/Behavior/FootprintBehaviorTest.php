@@ -15,7 +15,7 @@ class FootprintBehaviorTest extends TestCase
     {
         parent::setUp();
 
-        $table = TableRegistry::get('Muffin/Footprint.Articles');
+        $table = TableRegistry::getTableLocator()->get('Muffin/Footprint.Articles');
         $table->addBehavior('Muffin/Footprint.Footprint', [
             'events' => [
                 'Model.beforeSave' => [
@@ -40,7 +40,7 @@ class FootprintBehaviorTest extends TestCase
     public function tearDown()
     {
         parent::tearDown();
-        TableRegistry::clear();
+        TableRegistry::getTableLocator()->clear();
     }
 
     public function testSave()
